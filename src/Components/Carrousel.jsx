@@ -22,7 +22,7 @@ const Carrousel= () => {
       effect="fade"
       loop={true}
       autoplay={{
-    delay: 3000, // cambia cada 3 segundos
+    delay: 3000, 
     disableOnInteraction: false,
   }}
 
