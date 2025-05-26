@@ -1,5 +1,5 @@
 import { Box, Container, Typography, Button } from "@mui/material";
-import heroBg from "../assets/ImgsCarrousel/suculentas.png"; // Ruta a tu imagen de fondo
+import heroBg from "../assets/ImgsCarrousel/suculentas.png"; 
 
 const HeroOverlay = () => {
   return (

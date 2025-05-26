@@ -117,7 +117,7 @@ const BarraFiltros = () => {
 
 
 
-        {/* Chips estáticos */}
+        {/* Chips estáticos  */}
         <Box
           display="flex"
           flexWrap="wrap"
