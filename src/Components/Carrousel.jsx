@@ -21,10 +21,10 @@ const Carrousel= () => {
     modules={[EffectFade,Navigation, Autoplay]}
       effect="fade"
       loop={true}
-      autoplay={{
-    delay: 3000, 
-    disableOnInteraction: false,
-  }}
+  //     autoplay={{
+  //   delay: 3000, 
+  //   disableOnInteraction: false,
+  // }}
 
       spaceBetween={50}
       slidesPerView={1}

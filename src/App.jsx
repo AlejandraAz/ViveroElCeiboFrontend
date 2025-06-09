@@ -1,4 +1,4 @@
-
+import { BrowserRouter } from 'react-router-dom';
 import './css/App.css';
 import NavBar from './Components/NavBar.jsx';
 import Carrousel from './Components/Carrousel.jsx';
@@ -12,12 +12,14 @@ function App() {
 
   return (
     <>
+    <BrowserRouter>
       <NavBar/>
       <Carrousel/>
       <BarraFiltros/>
       <Tarjetas/>
       <HeroOverlay/>
       <Footer/>
+      </BrowserRouter>
     </>
   )
 }
