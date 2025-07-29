@@ -6,6 +6,7 @@ import BarraFiltros from './Components/BarraFiltros.jsx';
 import Tarjetas from './Components/Tarjetas.jsx';
 import HeroOverlay from './Components/HeroOverlay.jsx';
 import Footer from './Components/Footer.jsx';
+import AppRoutes from './routes/AppRoutes.jsx';
 
 
 function App() {
@@ -13,12 +14,13 @@ function App() {
   return (
     <>
     <BrowserRouter>
-      <NavBar/>
+    <AppRoutes/>
+      {/* <NavBar/>
       <Carrousel/>
       <BarraFiltros/>
       <Tarjetas/>
       <HeroOverlay/>
-      <Footer/>
+      <Footer/> */}
       </BrowserRouter>
     </>
   )
