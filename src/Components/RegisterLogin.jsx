@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
+import { FaHome } from 'react-icons/fa';
 
 const RegisterLogin = () => {
   return (
@@ -38,7 +38,7 @@ const RegisterLogin = () => {
                             Comenzar 
                         </button>
                     </form>
-                    <Link to='/' className='text-center font-bold flex items-center justify-center mt-4 gap-1 text-[#835D3C]'>Volver a Inicio<ArrowRight /> </Link>
+                    <Link to='/' className='text-center font-bold flex items-center justify-center mt-4 gap-1 text-[#835D3C]'>Volver a Inicio<FaHome size={18} /></Link>
                 </div>
             </div>
     </>
