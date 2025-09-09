@@ -38,6 +38,7 @@ const AppRoutes = () => {
 
         {/* Rutas de admin  las envuelvo a todas en el adminLayout*/}
         <Route path="/admin" element={<ProtectedRoutes role="admin"><AdminLayout /></ProtectedRoutes>}>
+
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="products" element={<ProductsPage/>}/>

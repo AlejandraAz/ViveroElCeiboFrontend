@@ -1,171 +1,13 @@
-
-// import { useState, useEffect } from "react";
-// import { X, Upload } from "lucide-react";
-
-// const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
-//   const [form, setForm] = useState({
-//     name: "",
-//     description: "",
-//     price: "",
-//     stock: 0,
-//     id_category: "",
-//     image: null,
-//   });
-
-//   useEffect(() => {
-//     if (isOpen) {
-//       setForm({
-//         name: "",
-//         description: "",
-//         price: "",
-//         stock: 0,
-//         id_category: "",
-//         image: null,
-//       });
-//     }
-//   }, [isOpen]);
-
-//   const handleChange = (e) => {
-//     const { name, value, files } = e.target;
-//     if (name === "image") {
-//       setForm({ ...form, image: files[0] });
-//     } else {
-//       setForm({ ...form, [name]: value });
-//     }
-//   };
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-
-//     const formData = new FormData();
-//     formData.append("name", form.name);
-//     formData.append("description", form.description);
-//     formData.append("price", form.price);
-//     formData.append("stock", form.stock);
-//     formData.append("id_category", form.id_category);
-//     if (form.image) formData.append("image", form.image);
-
-//     onSubmit(formData);
-//     onClose();
-//   };
-
-//   if (!isOpen) return null;
-
-//   return (
-//     <div className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-40 z-50">
-//       <div className="bg-[#e9cbb0] rounded-lg shadow-lg w-full max-w-md p-6 relative">
-//         {/* Botón cerrar */}
-//         <button
-//           className="absolute top-3 right-3 text-gray-600 hover:text-gray-800"
-//           onClick={onClose}
-//         >
-//           <X size={20} />
-//         </button>
-
-//         <h2 className="text-xl font-semibold text-center text-gray-700 mb-6">
-//           Agregar nuevo producto
-//         </h2>
-
-//         <form onSubmit={handleSubmit} className="space-y-4">
-//           {/* Nombre */}
-//           <input
-//             type="text"
-//             name="name"
-//             value={form.name}
-//             onChange={handleChange}
-//             placeholder="Nombre del producto"
-//             className="w-full p-2 border rounded"
-//             required
-//           />
-
-//           {/* Descripción */}
-//           <textarea
-//             name="description"
-//             value={form.description}
-//             onChange={handleChange}
-//             placeholder="Descripción"
-//             className="w-full p-2 border rounded"
-//             rows="3"
-//             required
-//           />
-
-//           {/* Fila Precio, Stock, Categoría */}
-//           <div className="grid grid-cols-3 gap-2">
-//             <input
-//               type="number"
-//               name="price"
-//               value={form.price}
-//               onChange={handleChange}
-//               placeholder="Precio"
-//               step="0.01"
-//               className="p-2 border rounded"
-//               required
-//             />
-//             <input
-//               type="number"
-//               name="stock"
-//               value={form.stock}
-//               onChange={handleChange}
-//               placeholder="Stock"
-//               className="p-2 border rounded"
-//               required
-//             />
-//             <select
-//               name="id_category"
-//               value={form.id_category}
-//               onChange={handleChange}
-//               className="p-2 border rounded"
-//               required
-//             >
-//               <option value="">Categoría</option>
-//               {categories?.length > 0 ? (
-//                 categories.map((cat) => (
-//                   <option key={cat.id} value={cat.id}>
-//                     {cat.name}
-//                   </option>
-//                 ))
-//               ) : (
-//                 <option disabled>Cargando...</option>
-//               )}
-//             </select>
-//           </div>
-
-//           {/* Imagen con icono */}
-//           <label className="flex items-center gap-2 p-2 border rounded cursor-pointer bg-white hover:bg-gray-50">
-//             <Upload size={18} className="text-gray-500" />
-//             <span className="text-gray-600">
-//               {form.image ? form.image.name : "Seleccionar imagen"}
-//             </span>
-//             <input
-//               type="file"
-//               name="image"
-//               accept="image/*"
-//               onChange={handleChange}
-//               className="hidden"
-//               required
-//             />
-//           </label>
-
-//           {/* Botón enviar */}
-//           <button
-//             type="submit"
-//             className="w-full bg-[#6A994E] text-white font-bold py-2 rounded-full  hover:bg-green-800"
-//           >
-//             AÑADIR
-//           </button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ProductModal;
-
-// **
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { X, Upload } from "lucide-react";
+import { toast } from "react-toastify";
+
+const MAX_FILES = 4;
+const MAX_MB_PER_FILE = 3; // ajustá si querés
+const ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
+  const [isDragging, setIsDragging] = useState(false);
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -173,11 +15,25 @@ const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
     stock: 0,
     id_category: "",
     images: [],
-    featured: false, // <-- agregado
+    featured: false,
   });
+
+  // URLs para previews (y limpieza segura)
+  const previewUrls = useMemo(
+    () => form.images.map((f) => URL.createObjectURL(f)),
+    [form.images]
+  );
+
+  useEffect(() => {
+    // Limpia los object URLs cuando cambian las imágenes o al desmontar
+    return () => {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previewUrls]);
 
   useEffect(() => {
     if (isOpen) {
+      setIsDragging(false);
       setForm({
         name: "",
         description: "",
@@ -185,38 +41,116 @@ const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
         stock: 0,
         id_category: "",
         images: [],
-        featured: false, // <-- reseteamos también aquí
+        featured: false,
       });
     }
   }, [isOpen]);
 
+  const notify = (msg, type = "error") => {
+    if (toast) {
+      type === "error" ? toast.error(msg) : toast.success(msg);
+    } else {
+      alert(msg);
+    }
+  };
+
+  // ---- helpers de validación/merge de archivos ----
+  const validateFiles = (files) => {
+    const errors = [];
+    for (const f of files) {
+      if (!ACCEPTED_TYPES.includes(f.type)) {
+        errors.push(`Tipo no permitido: ${f.name}`);
+      }
+      if (f.size > MAX_MB_PER_FILE * 1024 * 1024) {
+        errors.push(`El archivo ${f.name} supera ${MAX_MB_PER_FILE}MB`);
+      }
+    }
+    return errors;
+  };
+
+  const addFiles = (incoming) => {
+    const current = form.images;
+    const spaceLeft = MAX_FILES - current.length;
+
+    if (incoming.length > spaceLeft) {
+      notify(`Máximo ${MAX_FILES} imágenes. Solo se tomarán ${spaceLeft}.`);
+    }
+
+    const toAdd = Array.from(incoming).slice(0, Math.max(0, spaceLeft));
+    const errors = validateFiles(toAdd);
+    if (errors.length) {
+      notify(errors.join("\n"));
+      return;
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      images: [...prev.images, ...toAdd],
+    }));
+  };
+
+  // ---- handlers de drag & drop ----
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = e.dataTransfer.files;
+    addFiles(files);
+  };
+
+  // ---- handler cambios de input ----
   const handleChange = (e) => {
     const { name, value, files, type, checked } = e.target;
+
     if (name === "images") {
-      setForm({ ...form, images: Array.from(files) });  // guardamos todas las imágenes
-    } else if (type === "checkbox") {
-      setForm({ ...form, [name]: checked });
-    } else {
-      setForm({ ...form, [name]: value });
+      addFiles(files);
+      return;
     }
+
+    if (type === "checkbox") {
+      setForm((prev) => ({ ...prev, [name]: checked }));
+      return;
+    }
+
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const removeImageAt = (idx) => {
+    setForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== idx),
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("name", form.name);
-    formData.append("description", form.description);
-    formData.append("price", form.price);
-    formData.append("stock", form.stock);
-    formData.append("id_category", form.id_category);
-    formData.append("featured", form.featured);
-    
-    form.images.forEach((img) => {
-    formData.append("images", img); // este nombre debe coincidir con multer
-  });
+    if (form.images.length === 0) {
+      notify("Subí al menos 1 imagen.");
+      return;
+    }
 
-    onSubmit(formData);
+    const fd = new FormData();
+    fd.append("name", form.name.trim());
+    fd.append("description", form.description.trim());
+    fd.append("price", String(form.price));
+    fd.append("stock", String(form.stock));
+    fd.append("id_category", form.id_category);
+    fd.append("featured", String(form.featured)); // mejor en texto "true"/"false"
+
+    form.images.forEach((img) => {
+      fd.append("images", img); // <-- clave 'images' para upload.array('images', 4)
+    });
+
+    onSubmit(fd);
     onClose();
   };
 
@@ -225,10 +159,11 @@ const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-40 z-50">
       <div className="bg-[#e9cbb0] rounded-lg shadow-lg w-full max-w-md p-6 relative">
-        {/* Botón cerrar */}
+        {/* Cerrar */}
         <button
           className="absolute top-3 right-3 text-gray-600 hover:text-gray-800"
           onClick={onClose}
+          type="button"
         >
           <X size={20} />
         </button>
@@ -245,8 +180,8 @@ const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
             value={form.name}
             onChange={handleChange}
             placeholder="Nombre del producto"
-            className="w-full p-2 border rounded bg-[#F0EFEB]"
-            style={{ borderColor: '#B08968' }}
+            className="w-full p-2 border rounded bg-[#F0EFEB] focus:outline-none"
+            style={{ borderColor: "#B08968" }}
             required
           />
 
@@ -256,13 +191,13 @@ const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
             value={form.description}
             onChange={handleChange}
             placeholder="Descripción"
-            className="w-full p-2 border rounded bg-[#F0EFEB]"
-            style={{ borderColor: '#B08968' }}
+            className="w-full p-2 border rounded bg-[#F0EFEB] focus:outline-none"
+            style={{ borderColor: "#B08968" }}
             rows="3"
             required
           />
 
-          {/* Fila Precio, Stock, Categoría */}
+          {/* Precio, Stock, Categoría */}
           <div className="grid grid-cols-3 gap-2">
             <input
               type="number"
@@ -271,8 +206,8 @@ const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
               onChange={handleChange}
               placeholder="Precio"
               step="0.01"
-              className="p-2 border rounded bg-[#F0EFEB]"
-              style={{ borderColor: '#B08968' }}
+              className="p-2 border rounded bg-[#F0EFEB] focus:outline-none"
+              style={{ borderColor: "#B08968" }}
               required
             />
             <input
@@ -281,16 +216,16 @@ const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
               value={form.stock}
               onChange={handleChange}
               placeholder="Stock"
-              className="p-2 border rounded bg-[#F0EFEB]"
-              style={{ borderColor: '#B08968' }}
+              className="p-2 border rounded bg-[#F0EFEB] focus:outline-none"
+              style={{ borderColor: "#B08968" }}
               required
             />
             <select
               name="id_category"
               value={form.id_category}
               onChange={handleChange}
-              className="p-2 border rounded bg-[#F0EFEB] focus:border-[#B08968] focus:ring-2 focus:ring-[#B08968]  focus:outline-none"
-              style={{ borderColor: '#B08968' }}
+              className="p-2 border rounded bg-[#F0EFEB] focus:border-[#B08968] focus:ring-2 focus:ring-[#B08968] focus:outline-none"
+              style={{ borderColor: "#B08968" }}
               required
             >
               <option value="">Categoría</option>
@@ -306,43 +241,59 @@ const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
             </select>
           </div>
 
-          {/* Imagen con icono */}
-          {/* <label className="flex items-center gap-2 p-2 border rounded cursor-pointer bg-[#F0EFEB] hover:bg-gray-50">
-            <Upload size={18} className="text-gray-500" />
-            <span className="text-gray-600">
-              {form.image ? form.image.name : "Seleccionar imagen"}
-            </span>
+          {/* Dropzone + input múltiple */}
+          <div
+            className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+              isDragging ? "border-green-600 bg-green-50" : "border-[#B08968] bg-[#F0EFEB]"
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => document.getElementById("product-file-input")?.click()}
+          >
+            <Upload size={24} className="mx-auto text-gray-500 mb-2" />
+            <p className="text-gray-700">
+              <span className="font-medium text-green-700">Subir</span> o arrastrar imágenes aquí
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              JPG/PNG/WEBP • máx {MAX_MB_PER_FILE}MB c/u • hasta {MAX_FILES} imágenes
+            </p>
+
             <input
+              id="product-file-input"
               type="file"
-              name="image"
-              accept="image/*"
-              style={{ borderColor: '#B08968' }}
+              name="images"
+              accept={ACCEPTED_TYPES.join(",")}
+              multiple
+              className="hidden"
               onChange={handleChange}
-              className="hidden "
-              
-              required
             />
-          </label> */}
+          </div>
 
-<label className="flex items-center gap-2 p-2 border rounded cursor-pointer bg-[#F0EFEB] hover:bg-gray-50">
-  <Upload size={18} className="text-gray-500" />
-  <span className="text-gray-600">
-    {form.images.length > 0
-      ? `${form.images.length} archivo(s) seleccionados`
-      : "Seleccionar imágenes (1 a 4)"}
-  </span>
-  <input
-    type="file"
-    name="images"
-    accept="image/*"
-    multiple
-    onChange={handleChange}
-    className="hidden"
-    required
-  />
-</label>
+          {/* Previews con botón eliminar */}
+          {form.images.length > 0 && (
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              {form.images.map((img, i) => (
+                <div key={`${img.name}-${i}`} className="relative">
+                  <img
+                    src={previewUrls[i]}
+                    alt={`preview-${i}`}
+                    className="w-full h-24 object-cover rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImageAt(i)}
+                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    title="Quitar imagen"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
 
-          {/* Checkbox destacar debajo del input file */}
+          {/* Checkbox destacar */}
           <label className="flex items-center gap-2 mt-2">
             <input
               type="checkbox"
@@ -354,7 +305,7 @@ const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
             <span className="text-gray-700 font-medium">Destacar</span>
           </label>
 
-          {/* Botón enviar */}
+          {/* Enviar */}
           <button
             type="submit"
             className="w-full bg-[#6A994E] text-white font-bold py-2 rounded-full hover:bg-green-800"
