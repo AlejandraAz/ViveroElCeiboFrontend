@@ -157,11 +157,11 @@ const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-40 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#f0e7dd] bg-opacity-60 z-50">
       <div className="bg-[#e9cbb0] rounded-lg shadow-lg w-full max-w-md p-6 relative">
         {/* Cerrar */}
         <button
-          className="absolute top-3 right-3 text-gray-600 hover:text-gray-800"
+          className="absolute top-3 right-3 text-gray-600 hover:text-gray-800 cursor-pointer"
           onClick={onClose}
           type="button"
         >
@@ -308,7 +308,7 @@ const ProductModal = ({ isOpen, onClose, onSubmit, categories }) => {
           {/* Enviar */}
           <button
             type="submit"
-            className="w-full bg-[#6A994E] text-white font-bold py-2 rounded-full hover:bg-green-800"
+            className="w-full bg-[#6A994E] text-white font-bold py-2 rounded-full cursor-pointer hover:bg-green-800"
           >
             AÑADIR
           </button>

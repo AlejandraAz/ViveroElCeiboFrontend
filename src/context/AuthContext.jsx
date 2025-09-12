@@ -1,27 +1,41 @@
-import { createContext,useState,useContext } from "react";
+import { createContext,useState,useContext,useEffect } from "react";
+import api from '../../src/Services/Api.js';
+// import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({children})=>{
     const [user,setUser] = useState(null);
-    const [token,setToken]= useState(null);
+    const [loading,setLoading] = useState(true);
+    // const navigate = useNavigate();
 
-    const login = (userData,token)=>{
+  const checkAuth = async () => {
+    try {
+      const res = await api.get("/auth/protegida"); // si hay cookie válida, devuelve el usuario
+      setUser(res.data.user);
+    } catch (error) {
+      console.log('mensaje de error',error)
+      setUser(null); // no logueado
+    } finally {
+      setLoading(false);
+    }
+  };
+
+    const login = (userData)=>{
         setUser(userData);
-        setToken(token);
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(userData));
     }
 
-    const logout = ()=>{
+    const logout = async ()=>{
+        await api.post('/auth/logout');
         setUser(null);
-        setToken(null);
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+          //preguntar si conviene redirigir al Home o al login una vez cerrada la sesion
     }
 
+     useEffect(() => {
+    checkAuth();
+  }, []);
     return(
-        <AuthContext.Provider value={{user,token,login,logout}}>
+        <AuthContext.Provider value={{user,login,logout,loading}}>
         {children}
         </AuthContext.Provider>
     )

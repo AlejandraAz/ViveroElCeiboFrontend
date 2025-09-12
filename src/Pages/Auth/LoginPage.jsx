@@ -15,15 +15,17 @@ const LoginPage = () => {
   const handleLogin = async () => {
     try {
       const response = await api.post("/auth/login", { email, password });
-      login(response.data.user, response.data.token);
-      console.log("Login response:", response.data);
-      console.log(response.data.user.rol)
+      login(response.data.user);
+      // console.log("Login:", response.data);
+      // console.log(response.data.user.rol)
 
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       if (response.data.user.rol === "admin") {
         navigate("/admin/dashboard");
       } else { navigate("/") };
     } catch (error) {
-      if (error === error.response?.status === 403) {
+      if (error?.response?.status === 403) {
         alert("Tu cuenta está bloqueada. Contacta con el administrador.");
       } else {
         alert("Credenciales inválidas"); // o mostrar el error real
@@ -43,4 +45,4 @@ const LoginPage = () => {
   )
 }
 
-export default LoginPage
+export default LoginPage;

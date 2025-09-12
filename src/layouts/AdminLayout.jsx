@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import logo from "../assets/Logos/elceibologo2-removebg-preview.png"
+import logo from "../assets/Logos/elceibologo2-removebg-preview.png";
+import { useAuth } from '../context/AuthContext.jsx';
 import {
     Home,
     Users,
@@ -10,15 +11,20 @@ import {
     LogOut,
     ChevronRight,
     ChevronLeft,
+    ShieldCheck
 } from 'lucide-react';
+
+
 
 const AdminLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
+    const { logout } = useAuth();
 
     const links = [
         { to: '/admin/dashboard', label: 'Dashboard', icon: <Home size={20} /> },
+        { to: '/admin/admins', label: 'Administradores', icon:  <ShieldCheck size={20} /> },
         { to: '/admin/users', label: 'Usuarios', icon: <Users size={20} /> },
         { to: '/admin/categories', label: 'Categorías', icon: <Boxes size={20} /> },
         { to: '/admin/products', label: 'Productos', icon: <Package size={20} /> },
@@ -26,9 +32,8 @@ const AdminLayout = () => {
     ];
 
     const handleLogout = () => {
-        // Aquí tu lógica para cerrar sesión
-        localStorage.removeItem('token');
-        navigate('/login');
+    logout();
+    navigate('/login');
     };
 
     return (
@@ -36,10 +41,10 @@ const AdminLayout = () => {
             {/* Sidebar */}
             <aside className={`bg-green-900 text-white transition-all duration-300 ease-in-out ${collapsed ? 'w-16' : 'w-64'} flex flex-col`}>
                 <div className="flex items-center justify-between p-5 border-b border-green-700">
-                    {!collapsed && <h1 className="text-lg font-bold">panel de admin</h1>}
+                    {!collapsed && <h1 className="text-lg font-bold">administración</h1>}
                     <button
                         onClick={() => setCollapsed(!collapsed)}
-                        className="text-white"
+                        className="text-white cursor-pointer"
                         title={collapsed ? 'Expandir' : 'Colapsar'}
                     >
                         {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
@@ -76,7 +81,7 @@ const AdminLayout = () => {
                         <button
                             onClick={handleLogout}
 
-                            className="bg-yellow-300 text-green-800 px-3 py-1 rounded hover:bg-yellow-400 font-bold flex items-center cursor-pointer gap-2"
+                            className="bg-[#C1A35D] text-white px-3 py-1 rounded  hover:bg-[#B08968] font-bold flex items-center cursor-pointer gap-2"
                         >
                             <LogOut size={16} />
                             Cerrar sesión

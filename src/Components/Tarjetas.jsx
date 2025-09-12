@@ -13,12 +13,16 @@ import {
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import productos from "../data/productos.js";
+import { AlignCenter } from "lucide-react";
 
 
 const Tarjetas = () => {
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       {/* Contenedor con Grid (12 columnas por fila) */}
+      <Typography variant="h4" sx={{ mt: 3, mb: 4,textAlign:'center', fontWeight: 'bold', color: '#6A994E' }}>
+        Ofertas
+      </Typography>
       <Grid container spacing={3} justifyContent="center" alignItems="stretch">
         {productos.map((item, index) => (
           <Grid

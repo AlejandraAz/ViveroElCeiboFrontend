@@ -2,11 +2,16 @@ import React, { useEffect, useState } from "react";
 import Pagination from "../../../Components/Pagination.jsx";
 import ConfirmModal from '../../../Components/ConfirmModal.jsx';
 import api from "../../../Services/Api.js";
-import { LockKeyhole, LockKeyholeOpen,Mail,Plus } from "lucide-react";
+import { Mail,Plus } from "lucide-react";
+import { ToastContainer,toast } from "react-toastify";
 import { useSearchParams } from "react-router-dom";
 import UserChart from "../Users/UserChart.jsx";
+import { useNavigate } from "react-router-dom";
+import ToggleSwitch from "../../../Components/ToggleSwitch.jsx";
+import Loader from "../../../Components/Loader.jsx";
 
 const UsersPage = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Estados iniciales desde la URL
@@ -23,7 +28,8 @@ const UsersPage = () => {
   const [debouncedSearch, setDebouncedSearch] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [debouncedStatus, setDebouncedStatus] = useState(initialStatus);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); //para mi loader
+  const [targetStatus, setTargetStatus] = useState('');
 
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -62,6 +68,7 @@ const UsersPage = () => {
   const fetchUsers = async (search = "", currentPage = 1, status = "") => {
     setLoading(true);
     try {
+      await new Promise((resolve) => setTimeout(resolve, 900)); // simula carga
       const res = await api.get("/admin/customers", {
         params: {
           page: currentPage,
@@ -106,22 +113,44 @@ const UsersPage = () => {
     }
   };
 
-  const toggleStatus = async (id) => {
+  const toggleStatus = async (id,newStatus) => {
     try {
-      await api.patch(`/admin/customers/${id}/status`, {}, { withCredentials: true });
+      setLoading(true);
+      await api.patch(`/admin/customers/${id}/status`, {accountStatus: newStatus}, { withCredentials: true });
+      await new Promise((resolve) => setTimeout(resolve, 1000)); //en producción lo debo eliminar
+      toast.success(`Usuario ${newStatus === 'activo' ? 'activado' : 'bloqueado'} correctamente`);
       fetchUsers(debouncedSearch, page, debouncedStatus);
     } catch (err) {
+       toast.error("Error al cambiar el estado del usuario");
       console.error("Error al cambiar estado:", err);
-    }
+    }finally {
+    setLoading(false); // 👈 Ocultar loader
+  }
   };
 
-  const openConfirmModal = (user) => {
+  const handleToggleStatus = (user) => {
+  const newStatus = user.accountStatus === 'activo' ? 'bloqueado' : 'activo';
+
+  if (newStatus === 'bloqueado') {
+    // Si se quiere bloquear, mostrar modal
     setSelectedUser(user);
+    setTargetStatus(newStatus);
     setShowModal(true);
-  };
+  } else {
+    // Si se quiere activar, aplicar directamente
+    toggleStatus(user.id, newStatus);
+  }
+};
+
+
+  // const openConfirmModal = (user) => {
+  //   setSelectedUser(user);
+  //   setShowModal(true);
+  // };
 
   return (
-    <div className="p-6">
+    <div className="p-6 relative">
+      {loading && <Loader />}
       <h1 className="text-2xl font-bold mb-4">Gestión de Usuarios</h1>
 
 
@@ -159,8 +188,8 @@ const UsersPage = () => {
 
   <div className="flex gap-2">
     <button
-      onClick={() => console.log("Crear usuario")}
-      className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+      onClick={() => navigate('/admin/create-user')}
+      className="flex items-center gap-2 px-4 py-2 bg-green-600 cursor-pointer text-white rounded hover:bg-green-700"
     >
       <Plus className="w-4 h-4" />
       Crear Usuario
@@ -168,19 +197,18 @@ const UsersPage = () => {
 
     <button
       onClick={() => console.log("Enviar correo")}
-      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      className="flex items-center gap-2 px-4 cursor-pointer py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
     >
       <Mail className="w-4 h-4" />
       Enviar Correo
     </button>
+    </div>
   </div>
-  
-</div>
 
 
       {/* Tabla de usuarios */}
       <table className="table-auto w-full border border-gray-300">
-        <thead>
+        <thead className="text-[#835D3C]">
           <tr className="bg-gray-100">
             <th className="border border-gray-300 p-2">Nombre</th>
             <th className="border border-gray-300 p-2">Email</th>
@@ -190,43 +218,34 @@ const UsersPage = () => {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan="5" className="p-4 text-center text-gray-500">
-                Cargando usuarios...
-              </td>
-            </tr>
-          ) : users?.length > 0 ? (
-            users.map((u) => (
-              <tr key={u.id}>
-                <td className="border border-gray-300 p-2">{u.name}</td>
-                <td className="border border-gray-300 p-2">{u.email}</td>
-                <td className="border border-gray-300 p-2">{u.rol ?? "No asignado"}</td>
-                <td className="border border-gray-300 p-2">{u.accountStatus}</td>
-                <td className="border border-gray-300 p-2">
-                  <button
-                    onClick={() => openConfirmModal(u)}
-                    className="p-2 rounded cursor-pointer hover:bg-blue-600 bg-blue-500 text-white"
-                    title={u.accountStatus === "activo" ? "Bloquear usuario" : "Activar usuario"}
-                  >
-                    {u.accountStatus === "activo" ? (
-                      <LockKeyhole className="w-5 h-5" />
-                    ) : (
-                      <LockKeyholeOpen className="w-5 h-5" />
-                    )}
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" className="border border-gray-300 p-2 text-center text-gray-500">
-                🚫 No se encontraron coincidencias
-              </td>
-            </tr>
-          )}
+          {users?.length > 0 ? (
+  users.map((u) => (
+    <tr key={u.id}>
+      <td className="border border-gray-300 p-2">{u.name}</td>
+      <td className="border border-gray-300 p-2">{u.email}</td>
+      <td className="border border-gray-300 p-2">{u.rol ?? "No asignado"}</td>
+      <td className="border border-gray-300 p-2">{u.accountStatus}</td>
+      <td className="border border-gray-300 p-2 text-center">
+        <div className="flex justify-center">
+          <ToggleSwitch
+            isActive={u.accountStatus === 'activo'}
+            onToggle={() => handleToggleStatus(u)}
+          />
+        </div>
+      </td>
+    </tr>
+  ))
+) : (
+  <tr>
+    <td colSpan="5" className="border border-gray-300 p-2 font-bold text-center text-gray-500">
+        No se encontraron coincidencias
+    </td>
+  </tr>
+)}
+
         </tbody>
       </table>
+         
 
       {/* Paginación */}
       {users?.length > 0 && totalPages > 1 && (
@@ -243,12 +262,18 @@ const UsersPage = () => {
 
       {/* Modal de confirmación */}
       <ConfirmModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onConfirm={() => toggleStatus(selectedUser?.id)}
-        title={`¿Confirmás ${selectedUser?.accountStatus === "activo" ? "bloquear" : "activar"} este usuario?`}
-        message={`Esta acción cambiará el estado de la cuenta de "${selectedUser?.name}".`}
+      open={showModal}
+      onClose={() => setShowModal(false)}
+      onConfirm={() => {
+      toggleStatus(selectedUser?.id, targetStatus);
+      setShowModal(false);
+      }}
+      title={`¿Confirmás ${targetStatus === "bloqueado" ? "bloquear" : "activar"} este usuario?`}
+      message={`Esta acción cambiará el estado de la cuenta de "${selectedUser?.name}".`}
       />
+
+<ToastContainer position="top-right" autoClose={3000} />
+
     </div>
   );
 };

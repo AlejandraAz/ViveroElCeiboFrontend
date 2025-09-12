@@ -113,9 +113,9 @@ const Pagination = ({
                         <button
                             key={pageNumber}
                             onClick={() => onPageChange(pageNumber)}
-                            className={`px-3 py-1 rounded-md transition-colors duration-200 ${currentPage === pageNumber
-                                    ? "bg-orange-500 text-white shadow-md"
-                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                            className={`px-3 py-1 font-bold rounded-md transition-colors duration-200 ${currentPage === pageNumber
+                                    ? "bg-[#C1A35D] text-white shadow-md hover:bg-[#B08968] cursor-pointer"
+                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 cursor-pointer"
                                 }`}
                         >
                             {pageNumber}

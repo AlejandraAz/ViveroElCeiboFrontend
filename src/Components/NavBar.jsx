@@ -14,14 +14,19 @@ import MenuItem from '@mui/material/MenuItem';
 // import AdbIcon from '@mui/icons-material/Adb';
 import logoElCeibo from '../assets//Logos/elceibologo2-removebg-preview.png';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
+import { LogOut, User, ShoppingCart, ClipboardList } from 'lucide-react';
 
 
-const pages = ["Inicio", "Productos", "Imperdibles", "Nosotros", "Contacto"];
+const pages = ["Inicio", "Productos", "Ofertas", "Nosotros", "Contacto"];
 const settings = ["Perfil", "Mis compras", "Cerrar sesión"];
 
 function NavBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
   const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
@@ -29,8 +34,18 @@ function NavBar() {
   const handleCloseNavMenu = () => setAnchorElNav(null);
   const handleCloseUserMenu = () => setAnchorElUser(null);
 
+  const handleLogout = () => {
+    logout();
+  if (user?.rol === "admin") {
+    navigate("/login");
+  } else {
+    navigate("/");  // cliente o visitante
+  }
+  };
+
+
   return (
-    <AppBar position="sticky" sx={{ backgroundColor: "#6A994E",top:0 }}>
+    <AppBar position="sticky" sx={{ backgroundColor: "#6A994E", top: 0 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
           {/* LOGO + NAVEGACIÓN (desktop) */}
@@ -108,15 +123,33 @@ function NavBar() {
                 }
               }
             }}>
-              <IconButton color="inherit">
+              <IconButton color="inherit" onClick={() => {
+                if (user && user.rol === "cliente") {
+                  navigate('/customer/cart');
+                } else {
+                  navigate('/login');
+                }
+              }}>
                 <ShoppingCartIcon />
               </IconButton>
             </Tooltip>
 
             <Tooltip title="Abrir configuración">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar sx={{ bgcolor: '#C1A35D' }} />
-              </IconButton>
+              {user ? (
+                <Tooltip title="Abrir configuración">
+                  <IconButton onClick={handleOpenUserMenu}>
+                    <Avatar sx={{ bgcolor: '#C1A35D' }}>
+                      {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    </Avatar>
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <Tooltip title="Iniciar sesión">
+                  <IconButton onClick={() => navigate('/login')}>
+                    <Avatar sx={{ bgcolor: '#C1A35D' }} />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Tooltip>
 
             <Menu
@@ -126,12 +159,131 @@ function NavBar() {
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+              {/* {!user && (
+                <MenuItem
+                  onClick={() => {
+                    handleCloseUserMenu();
+                    navigate("/login");
+                  }}
+                >
+                  <Typography textAlign="center">Iniciar sesión</Typography>
                 </MenuItem>
-              ))}
+              )}
+
+              {user?.rol === "cliente" && (
+                <>
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseUserMenu();
+                      navigate("/customer/profile");
+                    }}
+                  >
+                    <Typography textAlign="center">Mi perfil</Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseUserMenu();
+                      navigate("/customer/orders");
+                    }}
+                  >
+                    <Typography textAlign="center">Mis compras</Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseUserMenu();
+                      logout();
+                    }}
+                  >
+                    <Typography textAlign="center">Cerrar sesión</Typography>
+                  </MenuItem>
+                </>
+              )} */}
+
+              {/* {user?.rol === "admin" && (
+                <>
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseUserMenu();
+                      navigate("/admin/dashboard");
+                    }}
+                  >
+                    <Typography textAlign="center">Panel admin</Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseUserMenu();
+                      logout();
+                    }}
+                  >
+                    <Typography textAlign="center">Cerrar sesión</Typography>
+                  </MenuItem>
+                </>
+              )} */}
+         {!user && (
+    <MenuItem
+      onClick={() => {
+        handleCloseUserMenu();
+        navigate("/login");
+      }}
+    >
+      <Typography textAlign="center">Iniciar sesión</Typography>
+    </MenuItem>
+  )}
+
+  {/* Cliente */}
+  {user?.rol === "cliente" && (
+    <>
+      <MenuItem
+        onClick={() => {
+          handleCloseUserMenu();
+          navigate("/customer/profile");
+        }}
+      >
+        <Typography textAlign="center">Mi perfil</Typography>
+      </MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleCloseUserMenu();
+          navigate("/customer/orders");
+        }}
+      >
+        <Typography textAlign="center">Mis compras</Typography>
+      </MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleCloseUserMenu();
+          handleLogout(); // Redirigir al home
+        }}
+      >
+        <Typography textAlign="center">Cerrar sesión</Typography>
+      </MenuItem>
+    </>
+  )}
+
+  {/* Admin */}
+  {user?.rol === "admin" && (
+    <>
+      <MenuItem
+        onClick={() => {
+          handleCloseUserMenu();
+          navigate("/admin/dashboard");
+        }}
+      >
+        <Typography textAlign="center">Panel admin</Typography>
+      </MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleCloseUserMenu();
+          handleLogout("/login"); // Redirigir a login
+        }}
+      >
+        <Typography textAlign="center">Cerrar sesión</Typography>
+      </MenuItem>
+    </>
+  )}
+
             </Menu>
+
           </Box>
         </Toolbar>
       </Container>

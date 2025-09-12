@@ -5,11 +5,11 @@ const ImagesModal = ({ isOpen, onClose, images, deleteImage, deleteAllImages }) 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200 bg-opacity-60">
+      <div className="bg-[#e9cbb0] rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto relative shadow-2xl">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+          className="absolute top-2 cursor-pointer right-2 text-gray-500 hover:text-gray-700"
         >
           <X className="w-5 h-5" />
         </button>
@@ -32,7 +32,7 @@ const ImagesModal = ({ isOpen, onClose, images, deleteImage, deleteAllImages }) 
                 />
                 <button
                   onClick={() => deleteImage(img.id)}
-                  className="bg-red-600 p-2 rounded text-white hover:bg-red-700 flex items-center gap-1"
+                  className="bg-[#8B5E3C] hover:bg-[#A65F46] p-2 rounded text-white cursor-pointer flex items-center gap-1"
                 >
                   <Trash2 className="w-4 h-4" /> Eliminar
                 </button>
@@ -44,7 +44,7 @@ const ImagesModal = ({ isOpen, onClose, images, deleteImage, deleteAllImages }) 
         {images.length > 0 && (
           <button
             onClick={deleteAllImages}
-            className="mt-4 w-full bg-red-700 text-white p-2 rounded hover:bg-red-800"
+            className="mt-4 w-full bg-[#8B5E3C] hover:bg-[#A65F46] text-white p-2 rounded cursor-pointer"
           >
             Eliminar Todas las Imágenes
           </button>
