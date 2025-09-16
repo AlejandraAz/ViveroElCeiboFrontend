@@ -19,6 +19,8 @@ import UserCreate from "../Pages/Admin/Users/UserCreate.jsx";
 import AdminsPage from "../Pages/Admin/admins/AdminsPage.jsx";
 import NotFound from "../Pages/NotFound.jsx";
 import UnauthorizedPage from "../Pages/UnauthorizedPage.jsx";
+import SearchResultsPage from "../Components/SearchResultsPage.jsx";
+import ProductDetailPage from "../Pages/Public/ProductDetailPage.jsx";
 
 const AppRoutes = () => {
   return (
@@ -30,6 +32,9 @@ const AppRoutes = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/search" element={<SearchResultsPage/>}/>
+          <Route path="/product/:id" element={<ProductDetailPage />} />
+
         </Route>
 
         {/* Rutas Cliente */}

@@ -20,7 +20,11 @@ const Tarjetas = () => {
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       {/* Contenedor con Grid (12 columnas por fila) */}
-      <Typography variant="h4" sx={{ mt: 3, mb: 4,textAlign:'center', fontWeight: 'bold', color: '#6A994E' }}>
+      <Typography variant="h4" sx={{ mt: 3, mb: 4,textAlign:'center', fontWeight: 'bold', color: '#6A994E',fontSize: {
+      xs: '1.5rem',  // tamaño en móviles
+      sm: '2rem',    // tablets
+      md: '2.25rem', // pantallas medianas
+    }, }}>
         Ofertas
       </Typography>
       <Grid container spacing={3} justifyContent="center" alignItems="stretch">

@@ -101,8 +101,10 @@ function ProductsPage() {
   const handleEditProduct = async (id, formData) => {
     setLoading(true)
     try {
+
       await api.put(`/admin/products/${id}`, formData, { headers: { "Content-Type": "multipart/form-data" } });
-      await new Promise(resolve => setTimeout(resolve, 850));
+      // await api.put(`/admin/products/${id}`, formData);
+      await new Promise(resolve => setTimeout(resolve, 500));
       fetchProducts();
       setIsEditModalOpen(false);
       toast.success("Producto actualizado");

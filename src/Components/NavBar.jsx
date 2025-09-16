@@ -55,7 +55,7 @@ function NavBar() {
                 component="img"
                 src={logoElCeibo}
                 alt="logo"
-                sx={{ height: 60 }}
+                sx={{ height: 90 }}
               />
             </Box>
 
@@ -63,7 +63,7 @@ function NavBar() {
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
-                sx={{ color: "white", textTransform: "none", fontWeight: "bold", ml: 1 }}
+                sx={{ color: "white", textTransform: "none", fontWeight: "bold",fontSize: "18px", ml: 1 }}
               >
                 {page}
               </Button>
@@ -130,7 +130,7 @@ function NavBar() {
                   navigate('/login');
                 }
               }}>
-                <ShoppingCartIcon />
+                <ShoppingCartIcon sx={{ fontSize: { xs: 24, md: 30 } }}  />
               </IconButton>
             </Tooltip>
 
@@ -138,7 +138,7 @@ function NavBar() {
               {user ? (
                 <Tooltip title="Abrir configuración">
                   <IconButton onClick={handleOpenUserMenu}>
-                    <Avatar sx={{ bgcolor: '#C1A35D' }}>
+                    <Avatar sx={{ bgcolor: '#C1A35D' ,width: 36,height: 36,fontSize: 16 }}>
                       {user?.name?.charAt(0).toUpperCase() || 'U'}
                     </Avatar>
                   </IconButton>
