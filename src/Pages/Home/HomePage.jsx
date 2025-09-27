@@ -8,6 +8,7 @@ import RegisterLogin from '../../Components/RegisterLogin.jsx';
 import FeaturedCarousel from '../../Components/FeaturedCarrusel.jsx';
 import AllProducts from '../../Components/AllProducts.jsx';
 import Benefits from '../../Components/Benefits.jsx';
+import CartPage from '../Cart/CartPage.jsx';
 
 
 const Home = () => {
@@ -20,7 +21,7 @@ const Home = () => {
     <AllProducts/>
     {/* <Tarjetas/> */}
     <HeroOverlay/>
-
+{/* <CartPage/> */}
     {/* prueba para visualizar lo que estoy haciendo */}
     {/* <FormPages/>
     <RegisterLogin/> */}

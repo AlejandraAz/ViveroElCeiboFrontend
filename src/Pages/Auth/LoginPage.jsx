@@ -30,9 +30,30 @@ const LoginPage = () => {
       } else {
         alert("Credenciales inválidas"); // o mostrar el error real
       }
-
     }
   }
+
+  // google
+  const handleGoogleLogin = async (credentialResponse) => {
+  try {
+    // credentialResponse.credential es el JWT de Google
+    const response = await api.post("/auth/google", {
+      credential: credentialResponse.credential,
+    });
+
+    login(response.data.user);
+
+    // Redirigir según rol
+    if (response.data.user.rol === "admin") {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/");
+    }
+  } catch (error) {
+    console.error("Error Google Login:", error);
+    alert("Error al iniciar sesión con Google");
+  }
+};
   return (
     <>
       <FormLogin
@@ -40,7 +61,8 @@ const LoginPage = () => {
         setEmail={setEmail}
         password={password}
         setPassword={setPassword}
-        handleLogin={handleLogin} />
+        handleLogin={handleLogin}
+        handleGoogleLogin={handleGoogleLogin}/>
     </>
   )
 }

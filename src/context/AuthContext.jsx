@@ -4,19 +4,23 @@ import api from '../../src/Services/Api.js';
 
 const AuthContext = createContext();
 
+
 export const AuthProvider = ({children})=>{
     const [user,setUser] = useState(null);
     const [loading,setLoading] = useState(true);
     // const navigate = useNavigate();
 
   const checkAuth = async () => {
+     
     try {
       const res = await api.get("/auth/protegida"); // si hay cookie válida, devuelve el usuario
+      
       setUser(res.data.user);
     } catch (error) {
       console.log('mensaje de error',error)
       setUser(null); // no logueado
     } finally {
+      
       setLoading(false);
     }
   };
@@ -32,6 +36,7 @@ export const AuthProvider = ({children})=>{
     }
 
      useEffect(() => {
+      
     checkAuth();
   }, []);
     return(

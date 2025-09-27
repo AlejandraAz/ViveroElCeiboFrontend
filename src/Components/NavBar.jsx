@@ -125,6 +125,7 @@ function NavBar() {
             }}>
               <IconButton color="inherit" onClick={() => {
                 if (user && user.rol === "cliente") {
+                  console.log("Navegando al carrito")
                   navigate('/customer/cart');
                 } else {
                   navigate('/login');
@@ -159,66 +160,6 @@ function NavBar() {
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
-              {/* {!user && (
-                <MenuItem
-                  onClick={() => {
-                    handleCloseUserMenu();
-                    navigate("/login");
-                  }}
-                >
-                  <Typography textAlign="center">Iniciar sesión</Typography>
-                </MenuItem>
-              )}
-
-              {user?.rol === "cliente" && (
-                <>
-                  <MenuItem
-                    onClick={() => {
-                      handleCloseUserMenu();
-                      navigate("/customer/profile");
-                    }}
-                  >
-                    <Typography textAlign="center">Mi perfil</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      handleCloseUserMenu();
-                      navigate("/customer/orders");
-                    }}
-                  >
-                    <Typography textAlign="center">Mis compras</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      handleCloseUserMenu();
-                      logout();
-                    }}
-                  >
-                    <Typography textAlign="center">Cerrar sesión</Typography>
-                  </MenuItem>
-                </>
-              )} */}
-
-              {/* {user?.rol === "admin" && (
-                <>
-                  <MenuItem
-                    onClick={() => {
-                      handleCloseUserMenu();
-                      navigate("/admin/dashboard");
-                    }}
-                  >
-                    <Typography textAlign="center">Panel admin</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      handleCloseUserMenu();
-                      logout();
-                    }}
-                  >
-                    <Typography textAlign="center">Cerrar sesión</Typography>
-                  </MenuItem>
-                </>
-              )} */}
          {!user && (
     <MenuItem
       onClick={() => {

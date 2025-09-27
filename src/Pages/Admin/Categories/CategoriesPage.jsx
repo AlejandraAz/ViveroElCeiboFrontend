@@ -40,7 +40,7 @@ const CategoriesPage = () => {
           limit: itemsPerPage,
         },
       });
-      await new Promise(resolve => setTimeout(resolve, 850));
+      await new Promise(resolve => setTimeout(resolve, 150));
       setCategories(res.data.categories || []);
       setTotalPages(res.data.totalPages || 1);
       setTotalItems(res.data.totalItems || 0);

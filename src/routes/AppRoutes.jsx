@@ -22,6 +22,7 @@ import UnauthorizedPage from "../Pages/UnauthorizedPage.jsx";
 import SearchResultsPage from "../Components/SearchResultsPage.jsx";
 import ProductDetailPage from "../Pages/Public/ProductDetailPage.jsx";
 
+
 const AppRoutes = () => {
   return (
     <>
@@ -44,6 +45,9 @@ const AppRoutes = () => {
             <Route path="profile" element={<ProfilePage />} />
             <Route path="orders" element={<OrderCustomerPage />} />
             <Route path="cart" element={<CartPage />} />
+
+            {/* ✅ Agrega esta temporalmente */}
+    <Route path="test-cart" element={<CartPage />} />
           </Route>
         </Route>
 

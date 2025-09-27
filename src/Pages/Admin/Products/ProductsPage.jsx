@@ -59,7 +59,7 @@ function ProductsPage() {
           category: selectedCategory || undefined
         }
       });
-      await new Promise(resolve => setTimeout(resolve, 850));  //no olvidar de borra al subir en produccion
+      await new Promise(resolve => setTimeout(resolve, 150));  //no olvidar de borra al subir en produccion
       setProducts(res.data.products || []);
       setTotalPages(res.data.totalPages || 1);
       setTotalItems(res.data.totalItems || 0);
@@ -76,7 +76,7 @@ function ProductsPage() {
     setLoading(true)
     try {
       const res = await api.get("/admin/categories");
-      await new Promise(resolve => setTimeout(resolve, 850));
+      await new Promise(resolve => setTimeout(resolve, 150));
       setCategories(res.data.categories || []);
     } catch (err) { console.error(err); 
     }finally{
@@ -88,7 +88,7 @@ function ProductsPage() {
     setLoading(true)
     try {
       await api.post("/admin/products", formData, { headers: { "Content-Type": "multipart/form-data" } });
-      await new Promise(resolve => setTimeout(resolve, 850));
+      await new Promise(resolve => setTimeout(resolve, 150));
       fetchProducts();
       setIsModalOpen(false);
       toast.success("Producto creado");
@@ -151,7 +151,7 @@ function ProductsPage() {
     try {
       const ids = currentImages.map(img => img.id);
       await Promise.all(ids.map(id => api.delete(`/admin/product-image/${id}`)));
-      await new Promise(resolve => setTimeout(resolve, 850));
+      await new Promise(resolve => setTimeout(resolve, 250));
       toast.success("Todas las imágenes eliminadas");
       setCurrentImages([]);
       fetchProducts();
