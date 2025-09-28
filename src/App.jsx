@@ -1,5 +1,6 @@
 
 import './css/App.css';
+import 'prosemirror-view/style/prosemirror.css';
 import NavBar from './Components/NavBar.jsx';
 import Carrousel from './Components/Carrousel.jsx';
 import Tarjetas from './Components/Tarjetas.jsx';

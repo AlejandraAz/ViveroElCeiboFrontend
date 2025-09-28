@@ -1,2 +1,22 @@
 @import "tailwindcss";
 
+/* Agrega esto a tu archivo de estilos globales (por ejemplo, App.css) */
+.tiptap-editor {
+  white-space: pre-wrap;
+}
+.ProseMirror {
+  outline: none;
+}
+
+/* estilos básicos para que H y listas se vean bien dentro de editor */
+.ProseMirror h1 { font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0; }
+.ProseMirror h2 { font-size: 1.125rem; font-weight: 600; margin: 0.4rem 0; }
+.ProseMirror h3 { font-size: 1rem; font-weight: 600; margin: 0.3rem 0; }
+
+.ProseMirror ul, .ProseMirror ol {
+  padding-left: 1.25rem;
+  margin: 0.4rem 0;
+}
+.ProseMirror li {
+  margin: 0.2rem 0;
+}
