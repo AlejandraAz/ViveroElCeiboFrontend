@@ -22,7 +22,7 @@ function ProductsPage() {
 
   const [currentProductId, setCurrentProductId] = useState(null); //para refernciarme a la hora de eliminar las imgs
 
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -67,7 +67,7 @@ function ProductsPage() {
       console.error(err);
       setProducts([]);
       toast.error("Error al cargar productos");
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -78,8 +78,9 @@ function ProductsPage() {
       const res = await api.get("/admin/categories");
       await new Promise(resolve => setTimeout(resolve, 150));
       setCategories(res.data.categories || []);
-    } catch (err) { console.error(err); 
-    }finally{
+    } catch (err) {
+      console.error(err);
+    } finally {
       setLoading(false)
     }
   };
@@ -92,8 +93,9 @@ function ProductsPage() {
       fetchProducts();
       setIsModalOpen(false);
       toast.success("Producto creado");
-    } catch (err) { console.error(err); toast.error("Error creando producto");
-    }finally{
+    } catch (err) {
+      console.error(err); toast.error("Error creando producto");
+    } finally {
       setLoading(false)
     }
   };
@@ -108,8 +110,9 @@ function ProductsPage() {
       fetchProducts();
       setIsEditModalOpen(false);
       toast.success("Producto actualizado");
-    } catch (err) { console.error(err); toast.error("Error actualizando producto"); 
-    }finally{
+    } catch (err) {
+      console.error(err); toast.error("Error actualizando producto");
+    } finally {
       setLoading(false)
     }
   };
@@ -131,7 +134,7 @@ function ProductsPage() {
   };
 
   const openConfirmModal = (product) => { setSelectedProduct(product); setConfirmModalOpen(true); };
-  const openImagesModal = (product) => { setCurrentImages(product.images || []); setImagesModalOpen(true);setCurrentProductId(product.id); };
+  const openImagesModal = (product) => { setCurrentImages(product.images || []); setImagesModalOpen(true); setCurrentProductId(product.id); };
 
   const deleteImage = async (imageId) => {
     setLoading(true)
@@ -141,7 +144,7 @@ function ProductsPage() {
       toast.success("Imagen eliminada");
       setCurrentImages(currentImages.filter(img => img.id !== imageId));
       fetchProducts();
-    } catch (err) { console.error(err); toast.error("No se pudo eliminar la imagen"); }finally{
+    } catch (err) { console.error(err); toast.error("No se pudo eliminar la imagen"); } finally {
       setLoading(false)
     }
   };
@@ -155,14 +158,14 @@ function ProductsPage() {
       toast.success("Todas las imágenes eliminadas");
       setCurrentImages([]);
       fetchProducts();
-    } catch (err) { console.error(err); toast.error("No se pudieron eliminar todas las imágenes"); }finally{
+    } catch (err) { console.error(err); toast.error("No se pudieron eliminar todas las imágenes"); } finally {
       setLoading(false)
     }
   };
 
   return (
     <div className="p-6">
-      {loading && <Loader/>}
+      {loading && <Loader />}
       <h1 className="text-2xl font-bold mb-4">Gestión de Productos</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -211,13 +214,13 @@ function ProductsPage() {
               </td>
               <td className="border p-2 text-center">
                 <div className="flex justify-center">
-                <button onClick={() => openImagesModal(p)} className="flex items-center  gap-1 px-2 py-1 bg-[#C1A35D] text-white rounded hover:bg-[#B08968] cursor-pointer">
-                  <Image className="w-4 h-4" /> Ver imágenes
-                </button>
+                  <button onClick={() => openImagesModal(p)} className="flex items-center  gap-1 px-2 py-1 bg-[#C1A35D] text-white rounded hover:bg-[#B08968] cursor-pointer">
+                    <Image className="w-4 h-4" /> Ver imágenes
+                  </button>
                 </div>
               </td>
               <td className="border p-2 flex justify-center gap-2">
-                <button onClick={() => { if(!p.status){toast.error("Debes activar el producto para editarlo."); return;} setEditingProduct(p); setIsEditModalOpen(true); }} className="p-2 rounded bg-[#C1A35D] text-white hover:bg-[#B08968] cursor-pointer" title="Editar">
+                <button onClick={() => { if (!p.status) { toast.error("Debes activar el producto para editarlo."); return; } setEditingProduct(p); setIsEditModalOpen(true); }} className="p-2 rounded bg-[#C1A35D] text-white hover:bg-[#B08968] cursor-pointer" title="Editar">
                   <Pencil className="w-5 h-5" />
                 </button>
                 <button onClick={() => openConfirmModal(p)} className={`p-2 rounded cursor-pointer text-white ${p.status ? "bg-[#8B5E3C] hover:bg-[#A65F46]" : "bg-green-600 hover:bg-green-700"}`} title={p.status ? "Inactivar" : "Restaurar"}>
@@ -231,13 +234,17 @@ function ProductsPage() {
         </tbody>
       </table>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-        totalItems={totalItems}
-        itemsPerPage={itemsPerPage}
-      />
+      {/* paginación */}
+      {products.length > 0 && totalPages > 1 && currentPage <= totalPages && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+        />
+      )}
+
 
       <ProductModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmit={handleAddProduct} categories={categories} />
       <EditProductModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onSubmit={handleEditProduct} product={editingProduct} categories={categories} />
