@@ -2,11 +2,9 @@
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import api from "../../Services/Api.js";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { User, Phone, Home, MapPin, Map, Mail, Trash2 } from 'lucide-react';
 
-const ProfileForm = ({ userProfile, setProfile, setUser }) => {
+const ProfileForm = ({ userProfile, setProfile, setUser, onSuccess }) => {
     const [formData, setFormData] = useState({
         name: userProfile.name || "",
         phone: userProfile.phone || "",
@@ -35,23 +33,35 @@ const ProfileForm = ({ userProfile, setProfile, setUser }) => {
     const handleRemovePhoto = async (e) => {
         e.stopPropagation();
         try {
-            // Actualizamos solo la foto en el estado local mientras llamamos a la API
-            setProfile((prev) => ({
-                ...prev,
-                photo: null,
-            }));
             setPreview(null);
             setFile(null);
 
-            const res = await api.put("/customer/profile", { photo: null });
+            // Armamos el objeto completo con los datos del form
+            const updatedData = {
+                name: formData.name,
+                phone: formData.phone,
+                street: formData.street,
+                streetNumber: formData.streetNumber,
+                city: formData.city,
+                neighborhood: formData.neighborhood,
+                postalCode: formData.postalCode,
+                photo: null, // 👈 importante: null en vez de ""
+            };
+
+            const res = await api.put("/customer/profile", updatedData, {
+                headers: { "Content-Type": "application/json" },
+            });
+
+            // Actualizamos el estado local y global
             setProfile(res.data.profile);
             setUser(res.data.profile);
-            //   toast.success("Foto de perfil eliminada correctamente!");
+
+            // if (onSuccess) onSuccess(); // cerrar modal + mostrar toast
         } catch (err) {
             console.error("Error al eliminar foto:", err);
-            //   toast.error("No se pudo eliminar la foto");
         }
     };
+
 
 
     const handleChange = (e) => {
@@ -78,10 +88,12 @@ const ProfileForm = ({ userProfile, setProfile, setUser }) => {
 
             setProfile(res.data.profile);
             setUser(res.data.profile);
-            toast.success("Perfil actualizado correctamente!");
+
+            if (onSuccess) onSuccess();
+            // toast.success("Perfil actualizado correctamente!");
         } catch (err) {
             console.error("Error al actualizar perfil:", err);
-            toast.error("Error al actualizar perfil");
+            // toast.error("Error al actualizar perfil");
         } finally {
             setLoading(false);
         }
@@ -89,16 +101,6 @@ const ProfileForm = ({ userProfile, setProfile, setUser }) => {
 
     return (
         <div className="max-w-4xl mx-auto p-4">
-            <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop
-                closeOnClick
-                pauseOnHover
-                draggable
-            />
-
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Dropzone */}
                 <div className="flex flex-col items-center">
@@ -232,8 +234,8 @@ const ProfileForm = ({ userProfile, setProfile, setUser }) => {
                 <button
                     type="submit"
                     className={`w-full py-2 rounded-lg text-white cursor-pointer font-semibold transition-colors duration-200 flex items-center justify-center gap-2 ${loading
-                            ? "bg-green-400 cursor-not-allowed"
-                            : "bg-green-600 hover:bg-green-700 active:bg-green-800"
+                        ? "bg-green-400 cursor-not-allowed"
+                        : "bg-green-600 hover:bg-green-700 active:bg-green-800"
                         }`}
                     disabled={loading}
                 >

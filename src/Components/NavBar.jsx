@@ -20,7 +20,7 @@ import { LogOut, User, ShoppingCart, ClipboardList } from 'lucide-react';
 
 
 const pages = ["Inicio", "Productos", "Ofertas", "Nosotros", "Contacto"];
-const settings = ["Perfil", "Mis compras", "Cerrar sesión"];
+// const settings = ["Perfil", "Mis compras", "Cerrar sesión"];
 
 function NavBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -135,23 +135,45 @@ function NavBar() {
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Abrir configuración">
+           
               {user ? (
-                <Tooltip title="Abrir configuración">
+            
+                 <Tooltip title="Abrir configuracion" componentsProps={{
+              tooltip: {
+                sx: {
+                  backgroundColor: '#C1A35D',
+                  color: '#333',
+                  fontSize: '14px',
+                  border: '1px solid #ccc',
+                  boxShadow: 3,
+                }
+              }
+            }}>
                   <IconButton onClick={handleOpenUserMenu}>
-                    <Avatar sx={{ bgcolor: '#C1A35D' ,width: 36,height: 36,fontSize: 16 }}>
-                      {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    <Avatar className='font-bold' src={user?.photo || null} sx={{ bgcolor: '#C1A35D' ,width: 47,height: 47,fontSize: 22 }}>
+                      {!user?.photo && (user?.name?.charAt(0).toUpperCase() || 'U')}
                     </Avatar>
                   </IconButton>
                 </Tooltip>
               ) : (
-                <Tooltip title="Iniciar sesión">
+                <Tooltip title="Iniciar sesión" componentsProps={{
+              tooltip: {
+                sx: {
+                  backgroundColor: '#C1A35D',
+                  color: '#333',
+                  fontSize: '14px',
+                  border: '1px solid #ccc',
+                  boxShadow: 3,
+                }
+              }
+            }}>
                   <IconButton onClick={() => navigate('/login')}>
                     <Avatar sx={{ bgcolor: '#C1A35D' }} />
                   </IconButton>
                 </Tooltip>
               )}
-            </Tooltip>
+
+
 
             <Menu
               anchorEl={anchorElUser}

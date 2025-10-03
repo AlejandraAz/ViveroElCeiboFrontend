@@ -20,3 +20,19 @@
 .ProseMirror li {
   margin: 0.2rem 0;
 }
+
+.prose ol  {
+  list-style-type: decimal;
+  padding-left: 1.25rem; /* o ajusta según tu diseño */
+}
+.prose ul {
+  list-style-type: circle;
+  padding-left: 1.25rem; 
+  /* list-style: disc; */
+}
+.prose ul li::marker{
+color: #37ce4d;
+}
+.prose ol li::marker{
+color: #45ec5e;
+}

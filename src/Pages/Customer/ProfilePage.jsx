@@ -4,13 +4,15 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import ProfileForm from "./ProfileForm.jsx";
 import ChangePasswordForm from "./ChangePasswordForm.jsx";
 import api from "../../Services/Api.js";
-import { Edit2, Lock } from "lucide-react";
+import { Edit2, Lock, X } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProfilePage = () => {
     const { user, setUser } = useAuth();
     const [profile, setProfile] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [showChangePassword, setShowChangePassword] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalType, setModalType] = useState(null);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -25,6 +27,32 @@ const ProfilePage = () => {
     }, []);
 
     if (!profile) return <p className="text-center mt-10">Cargando perfil...</p>;
+
+    const openEditProfileModal = () => {
+        setModalType("edit");
+        setIsModalOpen(true);
+    };
+
+    const openChangePasswordModal = () => {
+        setModalType("password");
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setModalType(null);
+    };
+
+    //  esta función se pasa al ProfileForm
+    const handleProfileUpdated = () => {
+        toast.success("Perfil actualizado correctamente!");
+        closeModal();
+    };
+
+    const handlePasswordUpdated = () => {
+    toast.success("Contraseña actualizada correctamente!");
+    closeModal();
+};
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-green-100 via-green-200 to-green-300 p-6">
@@ -63,46 +91,60 @@ const ProfilePage = () => {
                 {/* Botones */}
                 <div className="flex flex-col sm:flex-row sm:gap-4 gap-2 mb-4">
                     <button
-                        onClick={() => setIsEditing(!isEditing)}
-                        className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition text-sm sm:text-base"
+                        onClick={openEditProfileModal}
+                        className="flex items-center justify-center cursor-pointer gap-2 bg-green-500 hover:bg-green-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition text-sm sm:text-base"
                     >
                         <Edit2 size={16} />
-                        {isEditing ? "Cerrar edición" : "Editar perfil"}
+                        Editar perfil
                     </button>
 
                     <button
-                        onClick={() => setShowChangePassword(!showChangePassword)}
-                        className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition text-sm sm:text-base"
+                        onClick={openChangePasswordModal}
+                        className="flex items-center justify-center cursor-pointer gap-2 bg-green-500 hover:bg-green-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition text-sm sm:text-base"
                     >
                         <Lock size={16} />
                         Cambiar contraseña
                     </button>
                 </div>
+            </div>
 
-                {/* Sección editar perfil */}
-                <div
-                    className={`transition-all duration-500 ease-in-out overflow-hidden ${isEditing ? "max-h-[650px] opacity-100 mt-4" : "max-h-0 opacity-0"
-                        }`}
-                >
-                    <div className="bg-green-50 p-4 rounded-lg shadow-inner overflow-y-auto max-h-[600px]">
+            {/* Modal Edición */}
+            {isModalOpen && modalType === "edit" && (
+                <div className="fixed inset-0 bg-gray-300 bg-opacity-80 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl shadow-lg relative w-full max-w-lg">
+                        <button
+                            onClick={closeModal}
+                            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                        >
+                            <X size={24} />
+                        </button>
                         <ProfileForm
                             userProfile={profile}
                             setProfile={setProfile}
                             setUser={setUser}
+                            onSuccess={handleProfileUpdated} 
                         />
                     </div>
                 </div>
+            )}
 
-                {/* Sección cambiar contraseña */}
-                <div
-                    className={`transition-all duration-500 ease-in-out overflow-hidden ${showChangePassword ? "max-h-[500px] opacity-100 mt-4" : "max-h-0 opacity-0"
-                        }`}
-                >
-                    <div className="bg-green-50 p-4 rounded-lg shadow-inner overflow-y-auto max-h-[500px]">
-                        <ChangePasswordForm />
+            {/* Modal Cambio Contraseña */}
+            {isModalOpen && modalType === "password" && (
+                <div className="fixed inset-0 bg-gray-300 bg-opacity-80 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl shadow-lg relative w-full max-w-lg">
+                        <button
+                            onClick={closeModal}
+                            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                        >
+                            <X size={24} />
+                        </button>
+                        <ChangePasswordForm onSuccess={handlePasswordUpdated}/>
                     </div>
                 </div>
-            </div>
+            )}
+
+            {/* Contenedor de Toast */}
+            <ToastContainer />
         </div>
     );
 };
